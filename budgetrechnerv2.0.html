@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wunschrente Rechner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@400;600&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --navy: #004899;
+      --navy-mid: #00357a;
+      --gold: #FFC40B;
+      --gold-dark: #e6ae00;
+      --white: #ffffff;
+      --bg: #f2f4f8;
+      --text: #1a1a2e;
+      --muted: #6b7280;
+      --border: #dde3ed;
+      --cr: 12px;
+      --teal: #1a6e7a;
+    }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      min-height: 100vh;
+    }
+    .app {
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+      overflow: hidden;
+      background: var(--bg);
+    }
+    .hero { background: var(--white); padding: 2rem 1.75rem 0; }
+    .hero-title {
+      font-family: 'Source Serif 4', serif;
+      font-size: 28px; font-weight: 600; color: var(--navy);
+      margin-bottom: 1.75rem; text-align: center;
+    }
+    .wunsch-block { text-align: center; margin-bottom: 1.75rem; }
+    .wlabel { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .07em; margin-bottom: 10px; }
+    .winput-wrap { display: inline-flex; align-items: center; gap: 10px; background: var(--bg); border: 2px solid var(--border); border-radius: 16px; padding: 10px 24px; transition: border-color .2s; }
+    .winput-wrap:focus-within { border-color: var(--navy); }
+    .wchf { font-family: 'Source Serif 4', serif; font-size: 28px; font-weight: 600; color: var(--navy); }
+    .winput { font-family: 'Source Serif 4', serif; font-size: 36px; font-weight: 600; color: var(--navy); border: none; background: transparent; width: 160px; text-align: center; -moz-appearance: textfield; }
+    .winput::-webkit-inner-spin-button, .winput::-webkit-outer-spin-button { -webkit-appearance: none; }
+    .winput:focus { outline: none; }
+    .wunit { font-size: 16px; color: var(--muted); font-weight: 500; }
+
+    .alter-block { margin-bottom: 1.5rem; }
+    .alter-lrow { text-align: center; margin-bottom: 10px; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+    .alter-lbl { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+    .alter-chip { display: inline-block; background: var(--navy); color: var(--white); font-size: 13px; font-weight: 600; padding: 4px 16px; border-radius: 20px; }
+    .alter-row { display: flex; align-items: center; gap: 10px; }
+    .abtn { width: 32px; height: 32px; border-radius: 50%; background: var(--gold); border: none; cursor: pointer; font-size: 18px; font-weight: 600; color: var(--navy); display: flex; align-items: center; justify-content: center; flex-shrink: 0; line-height: 1; }
+    .abtn:hover { background: var(--gold-dark); }
+    .abtn:disabled { background: var(--border); color: var(--muted); cursor: default; }
+    .aslider { flex: 1; min-width: 0; }
+    .aslider input[type=range] { width: 100%; -webkit-appearance: none; appearance: none; height: 4px; background: var(--border); border-radius: 2px; outline: none; }
+    .aslider input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%; background: var(--white); border: 2px solid var(--gold); box-shadow: 0 0 0 3px var(--navy); cursor: pointer; }
+    .aslider input[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-radius: 50%; background: var(--white); border: 2px solid var(--gold); box-shadow: 0 0 0 3px var(--navy); cursor: pointer; }
+    .sage { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+    .zacken { line-height: 0; overflow: hidden; margin: 0 -1.75rem; }
+    .zacken svg { display: block; width: 100%; }
+
+    .banner { background: var(--navy); padding: 1.25rem 1.75rem 1.5rem; margin: 0 -1.75rem; }
+    .brow { display: flex; justify-content: space-between; align-items: baseline; padding: 7px 0; }
+    .brow + .brow { border-top: 1px solid rgba(255,255,255,.15); }
+    .blbl { font-size: 13px; color: rgba(255,255,255,.7); padding-right: 1rem; }
+    .bval { font-family: 'Source Serif 4', serif; font-size: 22px; font-weight: 600; color: var(--white); white-space: nowrap; }
+    .bval.gap { color: var(--gold); }
+    .bval.ok { color: #6ee7a8; }
+    .bsub { display: flex; justify-content: space-between; align-items: baseline; margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,.2); }
+    .bsublbl { font-size: 12px; color: rgba(255,255,255,.5); padding-right: 1rem; }
+    .bsubval { font-family: 'Source Serif 4', serif; font-size: 22px; font-weight: 600; color: var(--gold); white-space: nowrap; }
+    .prog { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,.12); }
+    .plrow { display: flex; justify-content: space-between; font-size: 11px; color: rgba(255,255,255,.55); margin-bottom: 5px; }
+    .ptrack { height: 7px; background: rgba(255,255,255,.15); border-radius: 4px; overflow: hidden; display: flex; }
+    .ps { height: 100%; transition: width .4s; }
+    .ps1 { background: #60a5fa; } .ps2 { background: #93c5fd; } .ps3 { background: #34d399; } .psmiss { background: rgba(255,196,11,.8); }
+    .pleg { display: flex; gap: 14px; margin-top: 7px; flex-wrap: wrap; }
+    .pli { display: flex; align-items: center; gap: 5px; font-size: 11px; color: rgba(255,255,255,.5); }
+    .pdot { width: 7px; height: 7px; border-radius: 50%; }
+    .nb { background: var(--navy); height: 8px; margin: 0 -1.75rem; }
+
+    .bottom { padding: 1.75rem 1.75rem 0; }
+    .sec-title { font-family: 'Source Serif 4', serif; font-size: 20px; font-weight: 600; color: var(--navy); margin-bottom: 1.25rem; }
+
+    .bvk { background: var(--white); border: .5px solid var(--border); border-radius: var(--cr); padding: 1rem 1.25rem; margin-bottom: 14px; text-align: center; }
+    .bvklbl { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .07em; margin-bottom: 8px; }
+    .bvkwrap { display: inline-flex; align-items: center; gap: 8px; }
+    .bvkchf { font-size: 16px; font-weight: 600; color: var(--muted); }
+    .bvkinp { font-family: 'Source Serif 4', serif; font-size: 28px; font-weight: 600; color: var(--navy); border: none; border-bottom: 2px solid var(--border); background: transparent; width: 220px; text-align: center; -moz-appearance: textfield; transition: border-color .2s; }
+    .bvkinp::-webkit-inner-spin-button, .bvkinp::-webkit-outer-spin-button { -webkit-appearance: none; }
+    .bvkinp:focus { outline: none; border-color: var(--navy); }
+    .bvkinp.mod { border-bottom-color: var(--gold); }
+    .bvkinfo { font-size: 11px; color: var(--muted); margin-top: 5px; line-height: 1.5; }
+
+    .tgrid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+    .tile { background: var(--white); border: 1.5px solid var(--border); border-radius: var(--cr); padding: 1rem 1rem .85rem; position: relative; min-width: 0; }
+    .tbadge { position: absolute; top: -1px; right: -1px; border-radius: 0 var(--cr) 0 8px; padding: 3px 9px; font-size: 10px; font-weight: 600; letter-spacing: .04em; white-space: nowrap; }
+    .bs1 { background: var(--navy); color: var(--white); }
+    .bs2 { background: var(--gold); color: var(--navy); }
+    .bs3 { background: var(--teal); color: var(--white); }
+    .tlbl { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 5px; }
+    .tval { font-size: 18px; font-weight: 600; color: var(--navy); font-family: 'Source Serif 4', serif; line-height: 1.2; margin-bottom: 9px; min-height: 26px; }
+    .btnA { display: inline-flex; align-items: center; font-size: 12px; font-weight: 500; color: var(--navy); border: 1px solid var(--border); border-radius: 20px; padding: 4px 12px; cursor: pointer; background: var(--white); font-family: 'DM Sans', sans-serif; }
+    .btnA:hover { background: var(--bg); border-color: var(--navy); }
+    .epanel { overflow: hidden; max-height: 0; transition: max-height .4s ease; }
+    .epanel.open { max-height: 500px; }
+    .einner { border-top: 1px solid var(--border); margin-top: 9px; padding-top: 9px; }
+
+    .olist { display: flex; flex-direction: column; gap: 5px; }
+    .oitem { display: flex; align-items: center; gap: 7px; padding: 6px 9px; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; font-size: 12px; }
+    .oitem:hover { border-color: var(--navy); background: var(--bg); }
+    .oitem.sel { border-color: var(--navy); background: #e8f0fb; }
+    .oradio { width: 13px; height: 13px; border-radius: 50%; border: 2px solid var(--border); flex-shrink: 0; }
+    .oitem.sel .oradio { border-color: var(--navy); background: var(--navy); box-shadow: inset 0 0 0 2px white; }
+    .oname { flex: 1; font-weight: 500; color: var(--text); min-width: 0; font-size: 12px; }
+    .oval { font-weight: 600; color: var(--navy); font-size: 11px; white-space: nowrap; }
+    .mrow { margin-top: 7px; display: flex; align-items: center; gap: 7px; }
+    .mrow label { font-size: 12px; color: var(--muted); white-space: nowrap; }
+    .mrow input { flex: 1; min-width: 0; height: 32px; border: 1px solid var(--border); border-radius: 6px; padding: 0 9px; font-size: 13px; font-weight: 600; color: var(--navy); font-family: 'DM Sans', sans-serif; }
+    .mrow input:focus { outline: none; border-color: var(--navy); }
+
+    .vlist { display: flex; gap: 5px; }
+    .vitem { flex: 1; padding: 7px 4px; border: 1.5px solid var(--border); border-radius: 8px; cursor: pointer; text-align: center; }
+    .vitem .vname { font-size: 12px; font-weight: 600; color: var(--muted); }
+    .vitem.sel { border-color: var(--navy); background: #e8f0fb; }
+    .vitem.sel .vname { color: var(--navy); }
+    .vitem:hover:not(.sel) { background: var(--bg); }
+
+    .eink-title { font-size: 13px; font-weight: 600; color: var(--navy); text-align: center; margin-bottom: 10px; }
+    .eink-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 7px; }
+    .eink-card { border: 1.5px solid var(--border); border-radius: 9px; padding: 8px 7px 7px; cursor: pointer; background: var(--white); transition: border-color .15s, background .15s; display: flex; flex-direction: column; }
+    .eink-card:hover:not(.eink-sel) { background: var(--bg); }
+    .eink-card.eink-sel { background: var(--gold); border-color: var(--gold-dark); }
+    .eink-card-name { font-size: 11px; font-weight: 700; color: var(--navy); margin-bottom: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .eink-card-pct { font-size: 10px; color: var(--muted); margin-bottom: 6px; white-space: nowrap; }
+    .eink-card.eink-sel .eink-card-pct { color: var(--navy); }
+    .eink-chart { width: 100%; height: 38px; display: block; flex-shrink: 0; }
+
+    .irow { display: flex; align-items: center; gap: 7px; margin-top: 2px; }
+    .irow span, .s3row span { font-size: 12px; color: var(--muted); white-space: nowrap; }
+    .irow input, .s3row input { flex: 1; min-width: 0; height: 32px; border: 1px solid var(--border); border-radius: 6px; padding: 0 9px; font-size: 13px; font-weight: 600; color: var(--navy); font-family: 'DM Sans', sans-serif; }
+    .irow input:focus, .s3row input:focus { outline: none; border-color: var(--navy); }
+    .zrow { display: flex; align-items: center; gap: 8px; margin-top: 5px; }
+    .zrow input[type=range] { flex: 1; min-width: 0; accent-color: var(--navy); }
+    .zchip { font-size: 12px; font-weight: 600; color: var(--navy); min-width: 32px; text-align: right; }
+    .s3row { display: flex; align-items: center; gap: 7px; }
+    .tinfo { font-size: 11px; color: var(--muted); line-height: 1.5; margin-top: 5px; }
+
+    .espac { height: 1.75rem; }
+    .egold { background: var(--gold); padding: .5rem 1.75rem 2.5rem; }
+    .etitle { font-family: 'Source Serif 4', serif; font-size: 24px; font-weight: 400; color: var(--white); margin-bottom: 2.5rem; }
+    .egrid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; align-items: stretch; }
+    .ecard-wrap { position: relative; padding-top: 28px; display: flex; flex-direction: column; }
+    .enum { position: absolute; top: 0; left: 1.1rem; font-family: 'Source Serif 4', serif; font-size: 44px; font-weight: 400; color: var(--navy); line-height: 1; z-index: 2; }
+    .ecard { background: var(--white); border-radius: var(--cr); padding: 1.75rem 1.1rem 1.4rem; flex: 1; }
+    .etext { font-size: 13px; color: var(--text); line-height: 1.65; }
+    .etext b { font-weight: 600; color: var(--navy); }
+    .etext em { font-style: italic; font-weight: 500; }
+  </style>
+</head>
+<body>
+<div class="app">
+<div class="hero">
+  <div class="hero-title">Meine Wunschrente berechnen</div>
+  <div class="wunsch-block">
+    <div class="wlabel">Gew&uuml;nschtes Einkommen monatlich nach Pensionierung</div>
+    <div class="winput-wrap">
+      <span class="wchf">CHF</span>
+      <input class="winput" type="number" id="wr" value="5000" min="500" max="20000" step="100" oninput="calc()">
+      <span class="wunit">.&#8211;</span>
+    </div>
+  </div>
+  <div class="alter-block">
+    <div class="alter-lrow">
+      <span class="alter-lbl">Geplantes Pensionsalter</span>
+      <span class="alter-chip" id="achip">65 Jahre</span>
+    </div>
+    <div class="alter-row">
+      <button class="abtn" id="aminus" onclick="stepA(-1)">&#8722;</button>
+      <div class="aslider">
+        <input type="range" id="aslider" min="60" max="70" value="65" step="1" oninput="onAS()">
+        <div class="sage"><span>60 Jahre</span><span>70 Jahre</span></div>
+      </div>
+      <button class="abtn" id="aplus" onclick="stepA(1)">+</button>
+    </div>
+  </div>
+  <div class="zacken">
+    <svg viewBox="0 0 900 52" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="900" height="52" fill="#004899"/>
+      <polygon points="350,0 550,0 450,52" fill="#f2f4f8"/>
+    </svg>
+  </div>
+  <div class="banner">
+    <div class="brow"><span class="blbl">Prognostizierte monatliche Rente (alle S&auml;ulen)</span><span class="bval" id="rg">&#8211;</span></div>
+    <div class="brow"><span class="blbl" id="glbl">Noch fehlende monatliche Rente</span><span class="bval gap" id="rgap">&#8211;</span></div>
+    <div class="bsub" id="bsub"><span class="bsublbl">Fehlendes BVK-Sparguthaben</span><span class="bsubval" id="bsubv">&#8211;</span></div>
+    <div class="prog">
+      <div class="plrow"><span>Deckungsgrad</span><span id="ppct">&#8211;</span></div>
+      <div class="ptrack">
+        <div class="ps ps1" id="b1" style="width:0%"></div>
+        <div class="ps ps2" id="b2" style="width:0%"></div>
+        <div class="ps ps3" id="b3" style="width:0%"></div>
+        <div class="ps psmiss" id="bg" style="width:0%"></div>
+      </div>
+      <div class="pleg">
+        <div class="pli"><div class="pdot" style="background:#60a5fa"></div>S&auml;ule 1 (AHV)</div>
+        <div class="pli"><div class="pdot" style="background:#93c5fd"></div>S&auml;ule 2 (BVK)</div>
+        <div class="pli"><div class="pdot" style="background:#34d399"></div>S&auml;ule 3</div>
+        <div class="pli"><div class="pdot" style="background:rgba(255,196,11,.85)"></div>Fehlend</div>
+      </div>
+    </div>
+  </div>
+  <div class="nb"></div>
+</div>
+
+<div class="bottom">
+  <div class="sec-title">Meine Optimierungsm&ouml;glichkeiten</div>
+  <div class="bvk">
+    <div class="bvklbl">Ihr BVK Sparguthaben zum Rentenalter <span id="bvk-alter">65</span></div>
+    <div class="bvkwrap"><span class="bvkchf">CHF</span><input class="bvkinp" type="number" id="pkf" value="750000" min="0" max="3000000" step="10000" oninput="onPK()"></div>
+    <div class="bvkinfo" id="bvki">Bereits hochgerechnetes Guthaben per Rentenalter.</div>
+  </div>
+
+  <div class="tgrid">
+    <div class="tile">
+      <span class="tbadge bs1">1. S&auml;ule</span>
+      <div class="tlbl">AHV-Rente monatlich</div>
+      <div class="tval" id="tahv">CHF 1'260.&#8211;</div>
+      <button class="btnA" onclick="tp('ahv')">Anpassen</button>
+      <div class="epanel" id="pahv"><div class="einner">
+        <div class="olist">
+          <div class="oitem" id="ao0" onclick="sAhv(0,2520)"><div class="oradio"></div><span class="oname">Maximalrente (Einzelperson)</span><span class="oval">CHF 2'520</span></div>
+          <div class="oitem sel" id="ao1" onclick="sAhv(1,1260)"><div class="oradio"></div><span class="oname">Minimalrente</span><span class="oval">CHF 1'260</span></div>
+          <div class="oitem" id="ao2" onclick="sAhv(2,3780)"><div class="oradio"></div><span class="oname">Ehegattenrente</span><span class="oval">CHF 3'780</span></div>
+          <div class="oitem" id="ao3" onclick="sAhv(3,null)"><div class="oradio"></div><span class="oname">Manuelle Eingabe</span></div>
+        </div>
+        <div class="mrow" id="amrow" style="display:none">
+          <label>CHF</label>
+          <input type="number" id="ahvm" value="1260" min="0" max="4500" step="10" oninput="ahvM()">
+          <span style="font-size:11px;color:var(--muted)">/Monat</span>
+        </div>
+      </div></div>
+    </div>
+
+    <div class="tile">
+      <span class="tbadge bs2">2. S&auml;ule</span>
+      <div class="tlbl">Entwicklung Einkommen</div>
+      <div class="tval" id="teink">Konservativ</div>
+      <button class="btnA" onclick="tp('eink')">Anpassen</button>
+      <div class="epanel" id="peink"><div class="einner">
+        <div class="eink-title">Entwicklung Ihres Einkommens</div>
+        <div class="eink-grid" id="eink-grid"></div>
+      </div></div>
+    </div>
+
+    <div class="tile">
+      <span class="tbadge bs2">2. S&auml;ule</span>
+      <div class="tlbl">Beitragsvariante</div>
+      <div class="tval" id="tbv">Standard</div>
+      <button class="btnA" onclick="tp('bv')">Anpassen</button>
+      <div class="epanel" id="pbv"><div class="einner">
+        <div class="vlist">
+          <div class="vitem" id="bv0" onclick="sBV(0)"><div class="vname">Basic</div></div>
+          <div class="vitem sel" id="bv1" onclick="sBV(1)"><div class="vname">Standard</div></div>
+          <div class="vitem" id="bv2" onclick="sBV(2)"><div class="vname">Top</div></div>
+        </div>
+        <div class="tinfo" id="bvi" style="margin-top:7px">Standard: Keine Anpassung des Sparguthabens.</div>
+      </div></div>
+    </div>
+  </div>
+
+  <div class="tgrid">
+    <div class="tile">
+      <span class="tbadge bs2">2. S&auml;ule</span>
+      <div class="tlbl">Aufstocken mit</div>
+      <div class="tval" id="tauf">CHF 0.&#8211;</div>
+      <button class="btnA" onclick="tp('auf')">Anpassen</button>
+      <div class="epanel" id="pauf"><div class="einner">
+        <div class="irow"><span>CHF</span><input type="number" id="aufinp" value="0" min="0" max="500000" step="1000" placeholder="0" oninput="calc()"></div>
+        <div class="tinfo" id="aufi" style="margin-top:7px">Einmaliger Einkauf, verzinst &uuml;ber 35 Jahre.</div>
+      </div></div>
+    </div>
+    <div class="tile">
+      <span class="tbadge bs2">2. S&auml;ule</span>
+      <div class="tlbl">Zinssatz (f&uuml;r Einkauf)</div>
+      <div class="tval" id="tzins">1.5%</div>
+      <button class="btnA" onclick="tp('zins')">Anpassen</button>
+      <div class="epanel" id="pzins"><div class="einner">
+        <div class="zrow">
+          <span style="font-size:11px;color:var(--muted)">0%</span>
+          <input type="range" id="zinsl" min="0" max="3" value="1.5" step="0.1" oninput="calc()">
+          <span style="font-size:11px;color:var(--muted)">3%</span>
+          <span class="zchip" id="zout">1.5%</span>
+        </div>
+        <div class="tinfo" id="zinsi">Zinssatz wird auf den freiwilligen Einkaufsbetrag angewendet.</div>
+      </div></div>
+    </div>
+    <div class="tile">
+      <span class="tbadge bs3">3. S&auml;ule</span>
+      <div class="tlbl">S&auml;ule 3a Guthaben</div>
+      <div class="tval" id="ts3">CHF 0.&#8211;</div>
+      <button class="btnA" onclick="tp('s3')">Anpassen</button>
+      <div class="epanel" id="ps3"><div class="einner">
+        <div class="s3row"><span>CHF</span><input type="number" id="s3inp" value="0" min="0" max="1000000" step="1000" placeholder="0" oninput="calc()"></div>
+        <div class="tinfo" id="s3i">Geben Sie Ihr aktuelles S&auml;ule-3-Guthaben ein. Kapitalverzehr bis Lebenserwartung 85 Jahre.</div>
+      </div></div>
+    </div>
+  </div>
+</div>
+
+<div class="espac"></div>
+<div class="zacken">
+  <svg viewBox="0 0 900 52" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <rect width="900" height="52" fill="#FFC40B"/>
+    <polygon points="350,0 550,0 450,52" fill="#f2f4f8"/>
+  </svg>
+</div>
+<div class="egold">
+  <div class="etitle">Empfehlungen f&uuml;r Sie:</div>
+  <div class="egrid" id="egrid"></div>
+</div>
+</div>
+
+<script>
+var UWS_B65=0.048,UWS_R65=0.068;
+var UWS={60:.055,61:.057,62:.059,63:.062,64:.065,65:.068,66:.071,67:.074,68:.077,69:.079,70:.082};
+function uws(a){return(UWS[a]||UWS_R65)/UWS_R65*UWS_B65;}
+var LE=85,YRS=35,PA=65,PR=0.02;
+var ahvV=1260,ahvS=1,bvS=1,pkB=750000,einkS=0;
+
+var EINK=[
+  {name:'Konservativ',pct:'+1% j\u00e4hrlich',pts:'2,40 20,38 38,36 56,34 74,32'},
+  {name:'Moderat',pct:'+2% j\u00e4hrlich',pts:'2,40 20,35 38,27 56,19 74,12'},
+  {name:'Karriere',pct:'+5% j\u00e4hrlich',pts:'2,40 16,30 30,20 46,10 62,4 74,1'}
+];
+
+function renderEinkGrid(){
+  var html='';
+  for(var i=0;i<EINK.length;i++){
+    var e=EINK[i];
+    var sel=i===einkS;
+    var stroke=sel?'#004899':'#9aafc4';
+    html+='<div class="eink-card'+(sel?' eink-sel':'')+'" onclick="sEink('+i+')">';
+    html+='<div class="eink-card-name">'+e.name+'</div>';
+    html+='<div class="eink-card-pct">'+e.pct+'</div>';
+    html+='<svg class="eink-chart" viewBox="0 0 76 44" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">';
+    html+='<polyline points="'+e.pts+'" fill="none" stroke="'+stroke+'" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>';
+    html+='</svg>';
+    html+='</div>';
+  }
+  document.getElementById('eink-grid').innerHTML=html;
+}
+
+function sEink(i){
+  einkS=i;
+  document.getElementById('teink').textContent=EINK[i].name;
+  renderEinkGrid();
+}
+
+function fmt(n){return'CHF '+Math.round(n).toLocaleString('de-CH').replace(/,/g,"'")+'.\u2013';}
+function fmtN(n){return Math.round(n).toLocaleString('de-CH').replace(/,/g,"'")+' CHF';}
+function bvM(){if(bvS===0)return 0.92;if(bvS===2)return 1.10;return 1.0;}
+function aM(a){return Math.pow(1+PR,a-PA);}
+function onPK(){pkB=parseFloat(document.getElementById('pkf').value)||0;calc();}
+function onAS(){syncA(parseInt(document.getElementById('aslider').value));calc();}
+function stepA(d){var s=document.getElementById('aslider');var v=Math.min(70,Math.max(60,parseInt(s.value)+d));s.value=v;syncA(v);calc();}
+function syncA(a){
+  document.getElementById('achip').textContent=a+' Jahre';
+  document.getElementById('aminus').disabled=(a<=60);
+  document.getElementById('aplus').disabled=(a>=70);
+  document.getElementById('bvk-alter').textContent=a;
+}
+function calc(){
+  var w=parseFloat(document.getElementById('wr').value)||0;
+  var a=parseInt(document.getElementById('aslider').value);
+  var auf=parseFloat(document.getElementById('aufinp').value)||0;
+  var s3=parseFloat(document.getElementById('s3inp').value)||0;
+  var z=parseFloat(document.getElementById('zinsl').value)||0;
+  syncA(a);
+  document.getElementById('zout').textContent=z.toFixed(1)+'%';
+  document.getElementById('tzins').textContent=z.toFixed(1)+'%';
+  var u=uws(a);
+  var aufFV=auf*Math.pow(1+z/100,YRS);
+  var pkG=pkB*aM(a)*bvM()+aufFV;
+  var inp=document.getElementById('pkf');
+  inp.value=Math.round(pkG);
+  inp.classList.toggle('mod',Math.round(pkG)!==Math.round(pkB));
+  document.getElementById('bvki').textContent='Umwandlungssatz '+a+' Jahre: '+(u*100).toFixed(2)+'% \u2192 BVK-Rente: '+fmt(pkG*u/12)+'/Monat';
+  var pkR=pkG*u/12;
+  var rj=Math.max(LE-a,1);
+  var s3R=s3/(rj*12);
+  var ges=ahvV+pkR+s3R;
+  var lk=w-ges;
+  document.getElementById('rg').textContent=fmt(ges);
+  var ge=document.getElementById('rgap');
+  var bs=document.getElementById('bsub');
+  if(lk>0){
+    ge.textContent=fmt(lk);ge.className='bval gap';
+    document.getElementById('glbl').textContent='Noch fehlende monatliche Rente';
+    bs.style.display='flex';document.getElementById('bsubv').textContent=fmtN(Math.round(lk*12/u));
+  } else {
+    ge.textContent=fmt(-lk);ge.className='bval ok';
+    document.getElementById('glbl').textContent='\u00dcberschuss \u00fcber Wunschrente';
+    bs.style.display='none';
+  }
+  var base=Math.max(w,ges,1);
+  document.getElementById('b1').style.width=Math.min(ahvV/base*100,100)+'%';
+  document.getElementById('b2').style.width=Math.min(pkR/base*100,100)+'%';
+  document.getElementById('b3').style.width=Math.min(s3R/base*100,100)+'%';
+  document.getElementById('bg').style.width=(lk>0?Math.min(lk/base*100,100):0)+'%';
+  document.getElementById('ppct').textContent=Math.min(Math.round(ges/Math.max(w,1)*100),100)+'%';
+  document.getElementById('ts3').textContent=s3>0?fmt(s3):'CHF 0.\u2013';
+  document.getElementById('tauf').textContent=auf>0?fmt(auf):'CHF 0.\u2013';
+  document.getElementById('aufi').textContent='Einmaliger Einkauf, verzinst \u00fcber '+YRS+' Jahre \u00e0 '+z.toFixed(1)+'% \u2192 +'+fmt(aufFV);
+  document.getElementById('zinsi').textContent=auf>0?fmt(auf)+' x (1+'+z.toFixed(1)+'%)^'+YRS+' = '+fmt(aufFV):'Zinssatz auf den freiwilligen Einkaufsbetrag.';
+  document.getElementById('s3i').textContent=s3>0?'Monatliche Rente: '+fmt(s3R)+' ('+rj+' Jahre)':'Geben Sie Ihr aktuelles S\u00e4ule-3-Guthaben ein.';
+  buildE(lk,u,s3);
+}
+function buildE(lk,u,s3){
+  var cards=[];
+  if(lk>0){
+    if(bvS<2){var g=pkB*(bvS===0?0.18:0.10)*u/12;cards.push({n:'01',t:'Die <em>Beitragsvariante Top</em> erm\u00f6glicht ein h\u00f6heres Altersguthaben und verbessert die Rente um ca. <b>'+fmt(g)+'</b>.'});}
+    else{cards.push({n:'01',t:'Die <em>Beitragsvariante Top</em> ist bereits aktiv \u2014 optimale Beitragsleistung.'});}
+    cards.push({n:'02',t:'Mit einem <em>Einkauf in die 2. S\u00e4ule</em> erh\u00f6hen Sie Ihr Alterskapital und sparen gleichzeitig Steuern.'});
+    if(s3===0){cards.push({n:'03',t:'Mit einer <em>3. S\u00e4ule</em> sparen Sie j\u00e4hrlich Steuern und haben mehr Geld im Alter. Noch kein Guthaben erfasst.'});}
+    else{cards.push({n:'03',t:'Eine <em>Erh\u00f6hung der 3. S\u00e4ule</em> kann die L\u00fccke weiter schlie\u00dfen und spart zus\u00e4tzlich Steuern.'});}
+  } else {
+    cards.push({n:'01',t:'Ihre Vorsorge ist <b>vollst\u00e4ndig gedeckt</b>. Der \u00dcberschuss von <b>'+fmt(-lk)+'/Monat</b> bietet einen komfortablen finanziellen Puffer f\u00fcr das Alter.'});
+    cards.push({n:'02',t:'Mit einem <em>Einkauf in die 2. S\u00e4ule</em> k\u00f6nnen Sie Ihr Alterskapital weiter ausbauen und gleichzeitig Steuern optimieren.'});
+    cards.push({n:'03',t:'Eine <em>3. S\u00e4ule</em> sichert zus\u00e4tzliche Steuervorteile und erh\u00f6ht Ihre finanzielle Flexibilit\u00e4t im Alter.'});
+  }
+  document.getElementById('egrid').innerHTML=cards.map(function(c){
+    return '<div class="ecard-wrap"><div class="enum">'+c.n+'</div><div class="ecard"><div class="etext">'+c.t+'</div></div></div>';
+  }).join('');
+}
+function tp(id){document.getElementById('p'+id).classList.toggle('open');}
+function sAhv(i,v){
+  ahvS=i;
+  for(var j=0;j<4;j++)document.getElementById('ao'+j).classList.toggle('sel',j===i);
+  var mr=document.getElementById('amrow');
+  if(i===3){mr.style.display='flex';ahvV=parseFloat(document.getElementById('ahvm').value)||0;}
+  else{mr.style.display='none';ahvV=v;}
+  document.getElementById('tahv').textContent=fmt(ahvV);calc();
+}
+function ahvM(){ahvV=parseFloat(document.getElementById('ahvm').value)||0;document.getElementById('tahv').textContent=fmt(ahvV);calc();}
+var bvN=['Basic','Standard','Top'];
+var bvI=['Basic: -5 Prozentpunkte Beitrag (Dummy, wird durch API ersetzt).','Standard: Keine Anpassung des Sparguthabens.','Top: +5 Prozentpunkte Beitrag (Dummy, wird durch API ersetzt).'];
+function sBV(i){
+  for(var j=0;j<3;j++)document.getElementById('bv'+j).classList.toggle('sel',j===i);
+  bvS=i;document.getElementById('tbv').textContent=bvN[i];
+  document.getElementById('bvi').textContent=bvI[i];calc();
+}
+syncA(65);renderEinkGrid();calc();
+</script>
+</body>
+</html>
