@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 14px; color: #172b4d; line-height: 1.6; max-width: 900px; margin: 0 auto; padding: 2rem; }
+  h1 { font-size: 24px; font-weight: 700; color: #004899; border-bottom: 3px solid #004899; padding-bottom: 8px; margin-top: 2.5rem; margin-bottom: 1rem; }
+  h2 { font-size: 18px; font-weight: 700; color: #004899; margin-top: 2rem; margin-bottom: 0.6rem; }
+  h3 { font-size: 15px; font-weight: 700; color: #344563; margin-top: 1.5rem; margin-bottom: 0.5rem; }
+  p { margin: 0.5rem 0 0.8rem; }
+  ul { margin: 0.4rem 0 0.8rem; padding-left: 1.6rem; }
+  li { margin-bottom: 4px; }
+  code { font-family: 'SFMono-Regular', Consolas, monospace; font-size: 12px; background: #eef2fb; color: #004899; padding: 2px 6px; border-radius: 4px; }
+  pre { background: #f0f4ff; border: 1px solid #c7d3ed; border-left: 4px solid #004899; border-radius: 6px; padding: 12px 16px; font-family: 'SFMono-Regular', Consolas, monospace; font-size: 12px; color: #004899; overflow-x: auto; margin: 0.8rem 0; white-space: pre; }
+
+  /* Title block */
+  .doc-title { background: linear-gradient(135deg, #004899 0%, #00357a 100%); color: white; padding: 2rem 2.5rem; border-radius: 10px; margin-bottom: 2rem; }
+  .doc-title h1 { color: white; border: none; font-size: 28px; margin: 0 0 0.4rem; }
+  .doc-title p { color: rgba(255,255,255,0.8); margin: 0; font-size: 14px; }
+
+  /* Callout boxes */
+  .callout { border-radius: 6px; padding: 12px 16px; margin: 1rem 0; }
+  .callout-dummy { background: #fdecea; border-left: 5px solid #c0392b; }
+  .callout-dummy .callout-title { color: #c0392b; font-weight: 700; font-size: 13px; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+  .callout-info { background: #e8f0fb; border-left: 5px solid #004899; }
+  .callout-info .callout-title { color: #004899; font-weight: 700; font-size: 13px; margin-bottom: 6px; }
+  .callout-tip { background: #fff8dc; border-left: 5px solid #FFC40B; }
+  .callout-tip .callout-title { color: #7d5a00; font-weight: 700; font-size: 13px; margin-bottom: 6px; }
+  .callout p, .callout li, .callout code { font-size: 13px; }
+  .callout p { margin: 4px 0; }
+
+  /* Legend */
+  .legend { display: flex; gap: 16px; flex-wrap: wrap; background: #f7f8fa; border: 1px solid #dfe1e6; border-radius: 8px; padding: 12px 16px; margin-bottom: 2rem; }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+  .legend-dot { width: 14px; height: 14px; border-radius: 3px; flex-shrink: 0; }
+
+  /* Tables */
+  table { width: 100%; border-collapse: collapse; margin: 0.8rem 0 1.2rem; font-size: 13px; }
+  th { background: #004899; color: white; padding: 8px 12px; text-align: left; font-weight: 600; font-size: 12px; }
+  td { padding: 8px 12px; border-bottom: 1px solid #dfe1e6; vertical-align: top; }
+  tr:nth-child(even) td { background: #f4f5f7; }
+  tr:hover td { background: #ebecf0; }
+
+  /* Section numbering badge */
+  .section-badge { display: inline-block; background: #004899; color: white; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 4px; margin-right: 8px; vertical-align: middle; }
+
+  /* TOC */
+  .toc { background: #f7f8fa; border: 1px solid #dfe1e6; border-radius: 8px; padding: 1.2rem 1.6rem; margin-bottom: 2.5rem; }
+  .toc h2 { margin-top: 0; font-size: 15px; color: #344563; }
+  .toc ol { margin: 0; padding-left: 1.4rem; }
+  .toc li { margin-bottom: 6px; font-size: 13px; }
+  .toc a { color: #004899; text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+  .toc ol ol { margin-top: 4px; padding-left: 1.2rem; }
+  .toc ol ol li { margin-bottom: 3px; color: #5e6c84; }
+
+  /* Formula highlight */
+  .formula { background: #e8f0fb; border: 1px solid #c7d3ed; border-radius: 6px; padding: 10px 16px; margin: 0.8rem 0; font-family: 'SFMono-Regular', Consolas, monospace; font-size: 13px; color: #004899; font-weight: 600; }
+
+  /* Status badge */
+  .badge { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 20px; }
+  .badge-dummy { background: #fdecea; color: #c0392b; }
+  .badge-ok { background: #e3fcef; color: #006644; }
+  .badge-partial { background: #fff0b3; color: #7d5a00; }
+
+  hr { border: none; border-top: 1px solid #dfe1e6; margin: 2rem 0; }
+</style>
+</head>
+<body>
+
+<div class="doc-title">
+  <h1>BVK Wunschrente-Rechner</h1>
+  <p>Technisches Konzept, Berechnungslogik &amp; Entwicklungsdokumentation &mdash; Prototyp v1.0</p>
+</div>
+
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:#fdecea;border:2px solid #c0392b"></div><strong>Roter Rahmen</strong> = Dummy-Daten &rarr; durch API ersetzen</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#e8f0fb;border:2px solid #004899"></div><strong>Blauer Rahmen</strong> = Produktive Logik im Frontend</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#fff8dc;border:2px solid #FFC40B"></div><strong>Gelber Rahmen</strong> = Empfehlung / Hinweis</div>
+</div>
+
+<div class="toc">
+  <h2>&#128196; Inhaltsverzeichnis</h2>
+  <ol>
+    <li><a href="#konzept">Konzept und Zielsetzung</a>
+      <ol>
+        <li><a href="#problemstellung">Problemstellung</a></li>
+        <li><a href="#loesungsansatz">L&ouml;sungsansatz: Gemeinsamer Nenner</a></li>
+      </ol>
+    </li>
+    <li><a href="#eingaben">Eingaben und Parameter</a></li>
+    <li><a href="#berechnungen">Berechnungslogik</a>
+      <ol>
+        <li><a href="#s1">S&auml;ule 1 &ndash; AHV-Rente</a></li>
+        <li><a href="#s2">S&auml;ule 2 &ndash; BVK-Rente</a></li>
+        <li><a href="#s3">S&auml;ule 3 &ndash; Private Vorsorge</a></li>
+      </ol>
+    </li>
+    <li><a href="#gesamtformel">Gesamtformel und Ergebnis</a></li>
+    <li><a href="#optimierung">Optimierungsparameter (Kacheln)</a></li>
+    <li><a href="#empfehlungen">Empfehlungslogik</a></li>
+    <li><a href="#technik">Technische Umsetzung</a></li>
+    <li><a href="#summary">Zusammenfassung: Alle Dummy-Daten</a></li>
+  </ol>
+</div>
+
+<hr>
+
+<!-- ─── 1. KONZEPT ─── -->
+<h1 id="konzept"><span class="section-badge">1</span> Konzept und Zielsetzung</h1>
+
+<p>Der BVK Wunschrente-Rechner ist ein interaktives Vorsorge-Tool, das Versicherten erm&ouml;glicht, <strong>r&uuml;ckw&auml;rts zu rechnen</strong>: Ausgehend von einer gew&uuml;nschten monatlichen Rente nach der Pensionierung wird berechnet, wie viel Gesamtkapital aus allen drei S&auml;ulen des Schweizer Vorsorgesystems ben&ouml;tigt wird &mdash; und ob dieses Kapital zum geplanten Rentenalter vorhanden ist.</p>
+
+<h2 id="problemstellung">1.1 Problemstellung</h2>
+<p>Das zentrale Problem besteht darin, dass Gelder aus den drei S&auml;ulen in unterschiedlichen Formen vorliegen:</p>
+<table>
+  <tr><th>S&auml;ule</th><th>Form der Angabe</th><th>Verf&uuml;gbarkeit</th></tr>
+  <tr><td><strong>S&auml;ule 1 (AHV)</strong></td><td>Monatliche Rente in CHF</td><td>Versicherter gibt Wert ein</td></tr>
+  <tr><td><strong>S&auml;ule 2 (BVK)</strong></td><td>Gesamtkapital in CHF</td><td>BVK liefert Wert via API</td></tr>
+  <tr><td><strong>S&auml;ule 3 (privat)</strong></td><td>Gesamtkapital in CHF</td><td>Versicherter gibt Wert ein</td></tr>
+</table>
+
+<h2 id="loesungsansatz">1.2 L&ouml;sungsansatz: Gemeinsamer Nenner</h2>
+<p>Alle drei S&auml;ulen werden auf eine <strong>monatliche Rente in CHF</strong> umgerechnet und summiert. Der Vergleich erfolgt direkt mit der eingegebenen Wunschrente.</p>
+<div class="formula">Gesamtrente (mtl.) = AHV-Rente + BVK-Rente + S&auml;ule-3-Rente &nbsp;&rarr;&nbsp; Vergleich mit Wunschrente &nbsp;&rarr;&nbsp; Differenz = L&uuml;cke oder &Uuml;berschuss</div>
+
+<hr>
+
+<!-- ─── 2. EINGABEN ─── -->
+<h1 id="eingaben"><span class="section-badge">2</span> Eingaben und Parameter</h1>
+
+<table>
+  <tr><th>Parameter</th><th>Beschreibung</th><th>Standardwert</th><th>Wertebereich</th></tr>
+  <tr><td><strong>Wunschrente</strong></td><td>Gew&uuml;nschte monatliche Rente nach Pensionierung</td><td>CHF 5&rsquo;000</td><td>500 &ndash; 20&rsquo;000 CHF/Monat</td></tr>
+  <tr><td><strong>Pensionsalter</strong></td><td>Geplantes Rentenalter; beeinflusst Umwandlungssatz, BVK-Guthaben und Kapitalverzehr</td><td>65 Jahre</td><td>60 &ndash; 70 Jahre</td></tr>
+  <tr><td><strong>BVK-Sparguthaben</strong></td><td>Hochgerechnetes Endguthaben per Rentenalter (von BVK geliefert)</td><td>CHF 750&rsquo;000 <span class="badge badge-dummy">Dummy</span></td><td>Frei editierbar</td></tr>
+</table>
+
+<div class="callout callout-dummy">
+  <div class="callout-title">&#128308; DUMMY &rarr; API ersetzen: BVK-Sparguthaben</div>
+  <p><strong>Prototyp:</strong> Standardwert CHF 750&rsquo;000, manuell editierbar.</p>
+  <p><strong>Final:</strong> Wert aus BVK-API laden, parametrisiert mit Versicherten-ID und Rentenalter.</p>
+  <code>GET /api/v1/insured/{id}/projected-savings?retirementAge=65</code>
+</div>
+
+<div class="callout callout-dummy">
+  <div class="callout-title">&#128308; DUMMY &rarr; API ersetzen: Pensionsalter-Einfluss auf BVK-Guthaben</div>
+  <p><strong>Prototyp:</strong> Bei Abweichung vom Basisalter 65 wird das Guthaben mit &plusmn;2% pro Jahr angepasst (pauschaler Multiplikator).</p>
+  <p><strong>Final:</strong> Angepasstes Guthaben direkt aus API abrufen, parametrisiert mit dem gew&auml;hlten Rentenalter.</p>
+  <code>GET /api/v1/insured/{id}/projected-savings?retirementAge={alter}</code>
+</div>
+
+<hr>
+
+<!-- ─── 3. BERECHNUNGEN ─── -->
+<h1 id="berechnungen"><span class="section-badge">3</span> Berechnungslogik</h1>
+
+<h2 id="s1">3.1 S&auml;ule 1 &ndash; AHV-Rente</h2>
+<p>Die AHV-Rente wird vom Versicherten manuell eingegeben. Vier Optionen stehen zur Verf&uuml;gung:</p>
+<table>
+  <tr><th>Option</th><th>Wert</th><th>Status</th></tr>
+  <tr><td>Minimalrente (Standard)</td><td>CHF 1&rsquo;260 / Monat</td><td><span class="badge badge-ok">Frontend-Fixwert</span></td></tr>
+  <tr><td>Maximalrente (Einzelperson)</td><td>CHF 2&rsquo;520 / Monat</td><td><span class="badge badge-ok">Frontend-Fixwert</span></td></tr>
+  <tr><td>Ehegattenrente</td><td>CHF 3&rsquo;780 / Monat</td><td><span class="badge badge-ok">Frontend-Fixwert</span></td></tr>
+  <tr><td>Manuelle Eingabe</td><td>Freier CHF-Betrag</td><td><span class="badge badge-ok">Frontend</span></td></tr>
+</table>
+<p>Die AHV-Rente fliesst direkt als monatlicher CHF-Betrag in die Gesamtberechnung ein &mdash; keine Umrechnung notwendig.</p>
+
+<div class="callout callout-info">
+  <div class="callout-title">&#128161; Hinweis: AHV-Rentenwerte</div>
+  <p>Die Fixwerte (CHF 1&rsquo;260 / 2&rsquo;520 / 3&rsquo;780) basieren auf den aktuellen AHV-Gesetzesgrundlagen und sind j&auml;hrlich auf G&uuml;ltigkeit zu pr&uuml;fen. Die Werte sind im Frontend hardcoded und m&uuml;ssen bei Anpassungen manuell aktualisiert werden.</p>
+  <p>Optional: Anbindung an e-AHVG API oder Empfehlung an Versicherten, den Wert von <code>my.ahv.ch</code> zu entnehmen.</p>
+</div>
+
+<h2 id="s2">3.2 S&auml;ule 2 &ndash; BVK-Rente</h2>
+<p>Das BVK-Sparguthaben (Gesamtkapital) wird via <strong>Umwandlungssatz</strong> in eine monatliche Rente umgerechnet:</p>
+<div class="formula">BVK-Rente (mtl.) = Sparguthaben &times; Umwandlungssatz &divide; 12</div>
+
+<h3>3.2.1 Umwandlungssatz</h3>
+<p>Der Umwandlungssatz ist altersabh&auml;ngig. Basis ist der intern gemessene BVK-Wert von <strong>4.8% bei Rentenalter 65</strong> (abgeleitet aus: CHF 36&rsquo;000 Jahresrente bei CHF 750&rsquo;000 Kapital). Die &uuml;brigen Altersstufen werden proportional skaliert:</p>
+<table>
+  <tr><th>Rentenalter</th><th>Umwandlungssatz (BVK intern, gerundet)</th><th>Beispielrente bei CHF 750&rsquo;000</th></tr>
+  <tr><td>60 Jahre</td><td>~3.88%</td><td>~CHF 2&rsquo;425/Monat</td></tr>
+  <tr><td>62 Jahre</td><td>~4.16%</td><td>~CHF 2&rsquo;600/Monat</td></tr>
+  <tr><td><strong>65 Jahre (Basis)</strong></td><td><strong>4.80%</strong></td><td><strong>CHF 3&rsquo;000/Monat</strong></td></tr>
+  <tr><td>67 Jahre</td><td>~5.22%</td><td>~CHF 3&rsquo;263/Monat</td></tr>
+  <tr><td>70 Jahre</td><td>~5.79%</td><td>~CHF 3&rsquo;619/Monat</td></tr>
+</table>
+
+<div class="callout callout-dummy">
+  <div class="callout-title">&#128308; DUMMY &rarr; API ersetzen: Umwandlungss&auml;tze</div>
+  <p><strong>Prototyp:</strong> Proportionale Skalierung ab BVG-Referenz (6.8% @ 65) auf BVK-intern (4.8% @ 65) gem&auml;ss fixer Tabelle im Frontend-Code.</p>
+  <p><strong>Final:</strong> G&uuml;ltige Umwandlungss&auml;tze direkt aus BVK-Reglement oder API beziehen.</p>
+  <code>GET /api/v1/conversion-rates</code>
+</div>
+
+<h3>3.2.2 Beitragsvariante</h3>
+<p>Die Beitragsvariante (Basic / Standard / Top) beeinflusst das Sparguthaben durch h&ouml;here oder tiefere monatliche Beitragss&auml;tze (&plusmn;5 Prozentpunkte je Stufe).</p>
+
+<div class="callout callout-dummy">
+  <div class="callout-title">&#128308; DUMMY &rarr; API ersetzen: Beitragsvariante-Einfluss</div>
+  <p><strong>Prototyp:</strong> Basic = &times;0.92 des Basisguthabens &nbsp;|&nbsp; Standard = &times;1.0 &nbsp;|&nbsp; Top = &times;1.10 (pauschale Multiplikatoren).</p>
+  <p><strong>Final:</strong> BVK-API liefert das hochgerechnete Guthaben f&uuml;r die gew&auml;hlte Variante direkt als Kapitalwert. Der Multiplikator im Frontend f&auml;llt weg.</p>
+  <code>GET /api/v1/insured/{id}/projected-savings?retirementAge=65&amp;contributionVariant=TOP</code>
+</div>
+
+<h3>3.2.3 Freiwilliger Einkauf</h3>
+<p>Ein einmaliger Einkauf in die PK (heute get&auml;tigt) w&auml;chst bis zum Rentenalter durch Verzinsung an:</p>
+<div class="formula">Einkauf-Zuwachs (Endwert) = Einkaufsbetrag &times; (1 + Zinssatz)<sup>35</sup></div>
+<table>
+  <tr><th>Parameter</th><th>Wert im Prototyp</th><th>Status</th></tr>
+  <tr><td>Laufzeit</td><td>35 Jahre (Annahme: Alter ca. 30 Jahre)</td><td><span class="badge badge-dummy">Dummy</span></td></tr>
+  <tr><td>Standardzinssatz</td><td>1.5% p.a.</td><td><span class="badge badge-dummy">Dummy</span></td></tr>
+  <tr><td>Slider-Bereich</td><td>0% &ndash; 3%</td><td><span class="badge badge-ok">Frontend</span></td></tr>
+</table>
+
+<div class="callout callout-dummy">
+  <div class="callout-title">&#128308; DUMMY &rarr; API ersetzen: Einkauf-Berechnung</div>
+  <p><strong>Prototyp:</strong> Pauschale Annahme von 35 Jahren Restlaufzeit und 1.5% Zins, Frontend-Formel.</p>
+  <p><strong>Final:</strong> Restlaufzeit aus Geburtsdatum und Rentenalter berechnen. Zinssatz aus aktuellem BVK-Reglement. Optional: Einkauf-Berechnung komplett serverseitig.</p>
+  <code>POST /api/v1/insured/{id}/voluntary-purchase-simulation</code>
+</div>
+
+<h2 id="s3">3.3 S&auml;ule 3 &ndash; Private Vorsorge</h2>
+<p>Das Kapital der S&auml;ule&nbsp;3 liegt als Gesamtbetrag vor. Die Umrechnung erfolgt via vereinfachten Kapitalverzehr:</p>
+<div class="formula">S&auml;ule-3-Rente (mtl.) = Kapital &divide; (Restlebensjahre &times; 12)</div>
+<table>
+  <tr><th>Parameter</th><th>Wert</th><th>Status</th></tr>
+  <tr><td>Lebenserwartung</td><td>85 Jahre (fixiert)</td><td><span class="badge badge-partial">Vereinfacht</span></td></tr>
+  <tr><td>Restlebensjahre</td><td>85 &minus; Rentenalter</td><td><span class="badge badge-ok">Frontend</span></td></tr>
+  <tr><td>Standardwert</td><td>CHF 0 (leer)</td><td><span class="badge badge-ok">Frontend</span></td></tr>
+</table>
+<p><em>Hinweis: Diese Methode ist konservativ und vereinfacht (kein Zinses-Zins auf verbleibendes Kapital). F&uuml;r eine pr&auml;zisere Berechnung w&auml;re ein Annuit&auml;tenfaktor zu verwenden.</em></p>
+
+<hr>
+
+<!-- ─── 4. GESAMTFORMEL ─── -->
+<h1 id="gesamtformel"><span class="section-badge">4</span> Gesamtformel und Ergebnis</h1>
+
+<h2>4.1 Monatsrente aus allen S&auml;ulen</h2>
+<table>
+  <tr><th>Komponente</th><th>Berechnung</th></tr>
+  <tr><td><strong>AHV-Rente</strong></td><td>Direkte Eingabe (CHF/Monat)</td></tr>
+  <tr><td><strong>BVK-Rente</strong></td><td>(Sparguthaben &times; BV-Faktor + Einkauf-FV) &times; Umwandlungssatz &divide; 12</td></tr>
+  <tr><td><strong>S&auml;ule-3-Rente</strong></td><td>S3-Kapital &divide; ((85 &minus; Rentenalter) &times; 12)</td></tr>
+  <tr><td><strong>Gesamtrente</strong></td><td><strong>AHV + BVK + S3</strong></td></tr>
+</table>
+
+<h2>4.2 L&uuml;cke / &Uuml;berschuss</h2>
+<table>
+  <tr><th>Ergebnis</th><th>Berechnung</th><th>Anzeige</th></tr>
+  <tr><td><strong>L&uuml;cke</strong></td><td>Wunschrente &minus; Gesamtrente (wenn &gt; 0)</td><td>Goldgelb im Banner</td></tr>
+  <tr><td><strong>Fehlendes BVK-Kapital</strong></td><td>L&uuml;cke &times; 12 &divide; Umwandlungssatz</td><td>Zus&auml;tzliche Zeile im Banner</td></tr>
+  <tr><td><strong>&Uuml;berschuss</strong></td><td>Gesamtrente &minus; Wunschrente (wenn &gt; 0)</td><td>Gr&uuml;n im Banner</td></tr>
+</table>
+
+<hr>
+
+<!-- ─── 5. OPTIMIERUNG ─── -->
+<h1 id="optimierung"><span class="section-badge">5</span> Optimierungsparameter (Kacheln)</h1>
+
+<table>
+  <tr><th>Kachel</th><th>S&auml;ule</th><th>Funktion</th><th>Status</th></tr>
+  <tr><td><strong>AHV-Rente</strong></td><td>1. S&auml;ule</td><td>Auswahl: Min / Max / Ehegatten / Manuell</td><td><span class="badge badge-ok">Frontend-Fixwerte</span></td></tr>
+  <tr><td><strong>Entwicklung Einkommen</strong></td><td>2. S&auml;ule</td><td>Konservativ / Moderat / Karriere</td><td><span class="badge badge-dummy">Dummy &rarr; API</span></td></tr>
+  <tr><td><strong>Beitragsvariante</strong></td><td>2. S&auml;ule</td><td>Basic / Standard / Top</td><td><span class="badge badge-dummy">Dummy &rarr; API</span></td></tr>
+  <tr><td><strong>Aufstocken (Einkauf)</strong></td><td>2. S&auml;ule</td><td>Einmalzahlung, aufgezinst</td><td><span class="badge badge-dummy">Dummy &rarr; API</span></td></tr>
+  <tr><td><strong>Zinssatz</strong></td><td>2. S&auml;ule</td><td>Slider 0&ndash;3%, Einfluss auf Einkauf</td><td><span class="badge badge-dummy">Dummy &rarr; API</span></td></tr>
+  <tr><td><strong>S&auml;ule-3-Guthaben</strong></td><td>3. S&auml;ule</td><td>Manuelle Kapitaleingabe</td><td><span class="badge badge-ok">Frontend</span></td></tr>
+</table>
+
+<div class="callout callout-dummy">
+  <div class="callout-title">&#128308; DUMMY &rarr; API ersetzen: Entwicklung Einkommen</div>
+  <p><strong>Prototyp:</strong> Rein visuelle Auswahl ohne Recheneinfluss (3 Kurven: +1% / +2% / +5% j&auml;hrlich).</p>
+  <p><strong>Final:</strong> Szenario als Parameter an BVK-API &uuml;bergeben. API berechnet angepasstes Sparguthaben basierend auf projizierten Lohnsteigerungen.</p>
+  <code>GET /api/v1/insured/{id}/projected-savings?scenario=CONSERVATIVE|MODERATE|CAREER</code>
+</div>
+
+<div class="callout callout-tip">
+  <div class="callout-title">&#128161; Empfehlung: Kombinierter API-Endpunkt f&uuml;r alle S&auml;ule-2-Parameter</div>
+  <p>Ein einziger kombinierter Endpunkt f&uuml;r alle S&auml;ule-2-Parameter reduziert die Komplexit&auml;t im Frontend erheblich:</p>
+  <pre>POST /api/v1/insured/{id}/savings-simulation
+{
+  "retirementAge": 65,
+  "contributionVariant": "TOP",
+  "incomeScenario": "MODERATE",
+  "voluntaryPurchase": 50000,
+  "interestRate": 0.015
+}
+&rarr; Response: { "projectedCapital": 850000, "monthlyPension": 3400 }</pre>
+</div>
+
+<hr>
+
+<!-- ─── 6. EMPFEHLUNGEN ─── -->
+<h1 id="empfehlungen"><span class="section-badge">6</span> Empfehlungslogik (dynamische Kacheln)</h1>
+
+<p>Die drei Empfehlungskacheln am Ende des Rechners generieren sich dynamisch basierend auf dem aktuellen Zustand:</p>
+<table>
+  <tr><th>Empfehlung</th><th>Bedingung</th><th>Text</th></tr>
+  <tr><td><strong>01 &ndash; Beitragsvariante</strong></td><td>BV = Basic oder Standard</td><td>Empfehle Wechsel zu Top, mit Angabe des Zuwachses</td></tr>
+  <tr><td><strong>01 &ndash; Beitragsvariante</strong></td><td>BV = Top</td><td>Best&auml;tigung als optimal</td></tr>
+  <tr><td><strong>02 &ndash; Einkauf</strong></td><td>L&uuml;cke vorhanden</td><td>Empfehle freiwilligen Einkauf</td></tr>
+  <tr><td><strong>03 &ndash; S&auml;ule 3</strong></td><td>S3 = 0</td><td>Empfehle Erfassung / Aufbau S&auml;ule 3</td></tr>
+  <tr><td><strong>03 &ndash; S&auml;ule 3</strong></td><td>S3 &gt; 0, L&uuml;cke bleibt</td><td>Empfehle Erh&ouml;hung des S3-Guthabens</td></tr>
+  <tr><td><strong>Alle Kacheln</strong></td><td>&Uuml;berschuss</td><td>Vorsorge gedeckt + aufbauende Hinweise</td></tr>
+</table>
+
+<div class="callout callout-info">
+  <div class="callout-title">&#128161; Produktive Logik (bleibt im Frontend)</div>
+  <ul>
+    <li><strong>AHV-Optionen:</strong> Fixwerte aus AHV-Gesetz (CHF 1&rsquo;260 / 2&rsquo;520 / 3&rsquo;780)</li>
+    <li><strong>S&auml;ule-3-Formel:</strong> Kapitalverzehr = Kapital &divide; (Restjahre &times; 12)</li>
+    <li><strong>L&uuml;ckenberechnung:</strong> Wunschrente &minus; (AHV + BVK + S3) &mdash; reines Frontend</li>
+    <li><strong>Empfehlungslogik:</strong> Dynamische Texte basierend auf aktuellem Zustand &mdash; reines Frontend</li>
+  </ul>
+</div>
+
+<hr>
+
+<!-- ─── 7. TECHNIK ─── -->
+<h1 id="technik"><span class="section-badge">7</span> Technische Umsetzung</h1>
+
+<h2>7.1 Frontend-Architektur</h2>
+<ul>
+  <li>Vollst&auml;ndig eigenst&auml;ndiges HTML-Dokument (Single File, kein Framework)</li>
+  <li>Vanilla JS + HTML + CSS, alle Berechnungen im Browser</li>
+  <li>Fonts via Google Fonts CDN (Source Serif 4, DM Sans)</li>
+  <li>Responsive mit max-width 900px</li>
+  <li>Download-f&auml;hig als .html-Datei, direkt im Browser lauff&auml;hig</li>
+</ul>
+
+<h2>7.2 Confluence-Einbindung via GitHub Pages</h2>
+<table>
+  <tr><th>Schritt</th><th>Beschreibung</th></tr>
+  <tr><td><strong>1. GitHub Repository</strong></td><td>Public oder internes GitHub-Repo erstellen, <code>index.html</code> hochladen</td></tr>
+  <tr><td><strong>2. GitHub Pages</strong></td><td>Settings &rarr; Pages &rarr; Branch <code>main</code> / root aktivieren (&sim;2 Min. bis live)</td></tr>
+  <tr><td><strong>3. Confluence Iframe</strong></td><td>Iframe Macro einf&uuml;gen, URL der GitHub-Pages-Site, H&ouml;he ca. 1500px</td></tr>
+  <tr><td><strong>4. Update</strong></td><td>Neue HTML-Version committen &rarr; Confluence aktualisiert sich automatisch</td></tr>
+</table>
+
+<hr>
+
+<!-- ─── 8. SUMMARY ─── -->
+<h1 id="summary"><span class="section-badge">8</span> Zusammenfassung: Alle Dummy-Daten im &Uuml;berblick</h1>
+
+<p><strong>Folgende Werte m&uuml;ssen vor dem Produktivgang durch echte API-Endpunkte ersetzt werden:</strong></p>
+
+<table>
+  <tr><th>Parameter</th><th>Dummy-Logik (Prototyp)</th><th>Final: API-Endpunkt</th></tr>
+  <tr><td><strong>BVK-Sparguthaben</strong></td><td>Standardwert CHF 750&rsquo;000, manuell editierbar</td><td><code>GET /projected-savings?retirementAge={a}</code></td></tr>
+  <tr><td><strong>Pensionsalter-Einfluss auf Guthaben</strong></td><td>&plusmn;2% pro Jahr Abweichung von Alter 65</td><td>Guthaben per Alter direkt aus API</td></tr>
+  <tr><td><strong>Umwandlungss&auml;tze</strong></td><td>Proportional von BVG 6.8% auf BVK 4.8% skaliert</td><td><code>GET /conversion-rates</code></td></tr>
+  <tr><td><strong>Beitragsvariante-Effekt</strong></td><td>Basic &times;0.92, Standard &times;1.0, Top &times;1.10</td><td><code>GET /projected-savings?variant=TOP</code></td></tr>
+  <tr><td><strong>Einkommensentwicklung</strong></td><td>Nur visuell, kein Recheneinfluss</td><td><code>GET /projected-savings?scenario=MODERATE</code></td></tr>
+  <tr><td><strong>Einkauf-Verzinsung</strong></td><td>35 Jahre Laufzeit, 1.5% Zins (pauschal)</td><td><code>POST /voluntary-purchase-simulation</code></td></tr>
+  <tr><td><strong>Lebenserwartung S&auml;ule 3</strong></td><td>Fixwert 85 Jahre</td><td>Aktuarische Tabelle oder API</td></tr>
+</table>
+
+<div style="text-align:center;color:#8993a4;font-size:12px;margin-top:3rem;padding-top:1rem;border-top:1px solid #dfe1e6;">
+  BVK Pensionskasse &mdash; Wunschrente-Rechner Prototyp v1.0 &mdash; Entwicklungsdokumentation
+</div>
+
+</body>
+</html>
