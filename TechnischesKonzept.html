@@ -133,14 +133,14 @@
   <tr><th>Parameter</th><th>Beschreibung</th><th>Standardwert</th><th>Wertebereich</th></tr>
   <tr><td><strong>Wunschrente</strong></td><td>Gew&uuml;nschte monatliche Rente nach Pensionierung</td><td>CHF 5&rsquo;000</td><td>500 &ndash; 20&rsquo;000 CHF/Monat</td></tr>
   <tr><td><strong>Pensionsalter</strong></td><td>Geplantes Rentenalter; beeinflusst Umwandlungssatz, BVK-Guthaben und Kapitalverzehr</td><td>65 Jahre</td><td>60 &ndash; 70 Jahre</td></tr>
-  <tr><td><strong>BVK-Sparguthaben</strong></td><td>Hochgerechnetes Endguthaben per Rentenalter (von BVK geliefert)</td><td>CHF 750&rsquo;000 <span class="badge badge-dummy">Dummy</span></td><td>Frei editierbar</td></tr>
+  <tr><td><strong>BVK-Sparguthaben</strong></td><td>Hochgerechnetes Endguthaben per Rentenalter (von BVK geliefert bzw. via PK/S API)</td><td>CHF 750&rsquo;000 <span class="badge badge-dummy">Dummy</span></td><td>Fix, via API</td></tr>
 </table>
 
 <div class="callout callout-dummy">
   <div class="callout-title">&#128308; DUMMY &rarr; API ersetzen: BVK-Sparguthaben</div>
-  <p><strong>Prototyp:</strong> Standardwert CHF 750&rsquo;000, manuell editierbar.</p>
+  <p><strong>Prototyp:</strong> Standardwert CHF 750&rsquo;000, fix via API oder flex. Referenz</p>
   <p><strong>Final:</strong> Wert aus BVK-API laden, parametrisiert mit Versicherten-ID und Rentenalter.</p>
-  <code>GET /api/v1/insured/{id}/projected-savings?retirementAge=65</code>
+  <code>GET /api/v1/insured/ bzw. {{insured.savingsBalance}} </code>
 </div>
 
 <div class="callout callout-dummy">
@@ -168,8 +168,8 @@
 
 <div class="callout callout-info">
   <div class="callout-title">&#128161; Hinweis: AHV-Rentenwerte</div>
-  <p>Die Fixwerte (CHF 1&rsquo;260 / 2&rsquo;520 / 3&rsquo;780) basieren auf den aktuellen AHV-Gesetzesgrundlagen und sind j&auml;hrlich auf G&uuml;ltigkeit zu pr&uuml;fen. Die Werte sind im Frontend hardcoded und m&uuml;ssen bei Anpassungen manuell aktualisiert werden.</p>
-  <p>Optional: Anbindung an e-AHVG API oder Empfehlung an Versicherten, den Wert von <code>my.ahv.ch</code> zu entnehmen.</p>
+  <p>Die Fixwerte (CHF 1&rsquo;260 / 2&rsquo;520 / 3&rsquo;780) basieren auf den aktuellen AHV-Gesetzesgrundlagen und sind j&auml;hrlich auf G&uuml;ltigkeit zu pr&uuml;fen. Die Werte sind hier im Prototyp im Frontend hardcoded und m&uuml;ssen bei Anpassungen manuell aktualisiert werden.</p>
+  <p>Optional: Anbindung an bestehende Berechnungslogik.</p>
 </div>
 
 <h2 id="s2">3.2 S&auml;ule 2 &ndash; BVK-Rente</h2>
