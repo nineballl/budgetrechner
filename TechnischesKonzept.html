@@ -190,8 +190,8 @@
 <div class="callout callout-dummy">
   <div class="callout-title">&#128308; DUMMY &rarr; API ersetzen: Umwandlungss&auml;tze</div>
   <p><strong>Prototyp:</strong> Proportionale Skalierung ab BVG-Referenz (6.8% @ 65) auf BVK-intern (4.8% @ 65) gem&auml;ss fixer Tabelle im Frontend-Code.</p>
-  <p><strong>Final:</strong> G&uuml;ltige Umwandlungss&auml;tze direkt aus BVK-Reglement oder API beziehen.</p>
-  <code>GET /api/v1/conversion-rates</code>
+  <p><strong>Final:</strong> G&uuml;ltige Umwandlungss&auml;tze aus aktuell g&uuml;ltiger Tabelle beziehen, die bereits genutzt wird.</p>
+  <code>GET /api/v1/conversion-rates</code> bzw. in diesem Fall nicht API sondern Excel-File mit Umwandlungs&auml;tzen.
 </div>
 
 <h3>3.2.2 Beitragsvariante</h3>
@@ -200,7 +200,7 @@
 <div class="callout callout-dummy">
   <div class="callout-title">&#128308; DUMMY &rarr; API ersetzen: Beitragsvariante-Einfluss</div>
   <p><strong>Prototyp:</strong> Basic = &times;0.92 des Basisguthabens &nbsp;|&nbsp; Standard = &times;1.0 &nbsp;|&nbsp; Top = &times;1.10 (pauschale Multiplikatoren).</p>
-  <p><strong>Final:</strong> BVK-API liefert das hochgerechnete Guthaben f&uuml;r die gew&auml;hlte Variante direkt als Kapitalwert. Der Multiplikator im Frontend f&auml;llt weg.</p>
+  <p><strong>Final:</strong> interne Berechnungslogik bzw. flex. Refereenz (sim.contribution) liefert das hochgerechnete Guthaben f&uuml;r die gew&auml;hlte Variante direkt als Kapitalwert. Der Multiplikator im Frontend f&auml;llt weg.</p>
   <code>GET /api/v1/insured/{id}/projected-savings?retirementAge=65&amp;contributionVariant=TOP</code>
 </div>
 
@@ -272,22 +272,7 @@
 <div class="callout callout-dummy">
   <div class="callout-title">&#128308; DUMMY &rarr; API ersetzen: Entwicklung Einkommen</div>
   <p><strong>Prototyp:</strong> Rein visuelle Auswahl ohne Recheneinfluss (3 Kurven: +1% / +2% / +5% j&auml;hrlich).</p>
-  <p><strong>Final:</strong> Szenario als Parameter an BVK-API &uuml;bergeben. API berechnet angepasstes Sparguthaben basierend auf projizierten Lohnsteigerungen.</p>
-  <code>GET /api/v1/insured/{id}/projected-savings?scenario=CONSERVATIVE|MODERATE|CAREER</code>
-</div>
-
-<div class="callout callout-tip">
-  <div class="callout-title">&#128161; Empfehlung: Kombinierter API-Endpunkt f&uuml;r alle S&auml;ule-2-Parameter</div>
-  <p>Ein einziger kombinierter Endpunkt f&uuml;r alle S&auml;ule-2-Parameter reduziert die Komplexit&auml;t im Frontend erheblich:</p>
-  <pre>POST /api/v1/insured/{id}/savings-simulation
-{
-  "retirementAge": 65,
-  "contributionVariant": "TOP",
-  "incomeScenario": "MODERATE",
-  "voluntaryPurchase": 50000,
-  "interestRate": 0.015
-}
-&rarr; Response: { "projectedCapital": 850000, "monthlyPension": 3400 }</pre>
+  <p><strong>Final:</strong> Ist bereits in interner Logik vorhanden (analog Lohnsteigerung nach Eingabe in Simulation)</p>
 </div>
 
 <hr>
@@ -321,7 +306,7 @@
 <!-- ─── 7. TECHNIK ─── -->
 <h1 id="technik"><span class="section-badge">7</span> Technische Umsetzung</h1>
 
-<h2>7.1 Frontend-Architektur</h2>
+<h2>7.1 Frontend-Architektur des Prototyp</h2>
 <ul>
   <li>Vollst&auml;ndig eigenst&auml;ndiges HTML-Dokument (Single File, kein Framework)</li>
   <li>Vanilla JS + HTML + CSS, alle Berechnungen im Browser</li>
@@ -330,21 +315,13 @@
   <li>Download-f&auml;hig als .html-Datei, direkt im Browser lauff&auml;hig</li>
 </ul>
 
-<h2>7.2 Confluence-Einbindung via GitHub Pages</h2>
-<table>
-  <tr><th>Schritt</th><th>Beschreibung</th></tr>
-  <tr><td><strong>1. GitHub Repository</strong></td><td>Public oder internes GitHub-Repo erstellen, <code>index.html</code> hochladen</td></tr>
-  <tr><td><strong>2. GitHub Pages</strong></td><td>Settings &rarr; Pages &rarr; Branch <code>main</code> / root aktivieren (&sim;2 Min. bis live)</td></tr>
-  <tr><td><strong>3. Confluence Iframe</strong></td><td>Iframe Macro einf&uuml;gen, URL der GitHub-Pages-Site, H&ouml;he ca. 1500px</td></tr>
-  <tr><td><strong>4. Update</strong></td><td>Neue HTML-Version committen &rarr; Confluence aktualisiert sich automatisch</td></tr>
-</table>
 
 <hr>
 
 <!-- ─── 8. SUMMARY ─── -->
 <h1 id="summary"><span class="section-badge">8</span> Zusammenfassung: Alle Dummy-Daten im &Uuml;berblick</h1>
 
-<p><strong>Folgende Werte m&uuml;ssen vor dem Produktivgang durch echte API-Endpunkte ersetzt werden:</strong></p>
+<p><strong>Folgende Werte m&uuml;ssen vor dem Produktivgang durch echte API-Endpunkte oder interne Berechnungslogiken ersetzt werden:</strong></p>
 
 <table>
   <tr><th>Parameter</th><th>Dummy-Logik (Prototyp)</th><th>Final: API-Endpunkt</th></tr>
